@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:halldenapp/UI/Intray/intray_page.dart';
+import 'package:halldenapp/UI/Login/loginscreen.dart';
+import 'package:halldenapp/bloc/blocs/user_bloc_provider.dart';
 import 'package:halldenapp/models/global.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:halldenapp/models/classes/user.dart';
+import 'package:halldenapp/bloc/blocs/user_bloc_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,12 +18,49 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Hallden App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginPage(),
+      /*FutureBuilder(
+        future: getUser(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.none &&
+              snapshot.hasData == Null) {
+            return Container();
+          }
+          return ListView.builder(
+            itemCount: snapshot.data.lenght,
+            itemBuilder: (context, index) {
+              return Column(children: []);
+            },
+          );
+        },
+      ),*/
     );
+  }
+
+  Future getUser() async {
+    var result = await http.get("http://127.0.0.1:5000/api/register");
+    print(result.body);
+    return result;
+  }
+
+  asyncFunc() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  }
+
+  Future<String> getApiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String apiKey;
+    try {
+      apiKey = prefs.getString('API_TOKEN');
+    } catch (Exception) {
+      apiKey = "";
+    }
+    return apiKey;
   }
 }
 
